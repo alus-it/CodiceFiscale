@@ -19,7 +19,7 @@ typedef struct comunale {
 	char alfa;
 	int num;
 	struct comunale *nx;
-}*comune;
+} *comune;
 
 int carica(const char *filecomuni);
 comune ricerca(const char *nomeComune);

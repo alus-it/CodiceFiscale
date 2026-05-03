@@ -384,10 +384,11 @@ void pulisci(void) {
 	int i;
 	comune dato,preced;
 
-	if(comuniCaricati) for(i=0;i<MAXV;i++)
-		if(hash[i]!=NULL ) {
+	if(!comuniCaricati) return;
+	for(i=0;i<MAXV;i++) {
+		if(hash[i]!=NULL) {
 			dato=hash[i];
-			while(dato->nx!=NULL ) {
+			while(dato->nx!=NULL) {
 				preced=dato;
 				free(preced);
 				dato=dato->nx;
@@ -395,4 +396,5 @@ void pulisci(void) {
 			free(dato);
 			hash[i]=NULL;
 		}
+	}
 }
