@@ -1,18 +1,16 @@
 /*============================================================================
  * Name        : main.cpp
- * Version     : 0.1
+ * Version     : 0.2
  * Since       : 2004
  * Author      : Alberto Realis-Luc <alberto.realisluc@gmail.com>
  * Web         : http://www.alus.it/pubs/CodiceFiscale
- * Copyright   : © 2004 Alberto Realis-Luc
- * License     : GNU GPL
- * Last change : 1/2/2013
+ * Copyright   : (C) 2004 Alberto Realis-Luc
+ * License     : GNU GPL v2
  * Description : Win32 application to calculate Italian fiscal codes
  *============================================================================*/
 
 //TODO:
 	//reset CF se si cambia qualcosa
-
 
 #include <windows.h>
 #include <stdio.h>
@@ -74,7 +72,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam) 
 				break;
 			}
 			
-			titlLabel = CreateWindow("STATIC", "CALCOLO CODICE FISCALE", WS_CHILD | WS_VISIBLE, 50, 5, 180, 30, hwnd, (HMENU)ID_L_TITL, GetModuleHandle(NULL), NULL);
+			titlLabel = CreateWindow("STATIC", "CALCOLO CODICE FISCALE", WS_CHILD | WS_VISIBLE, 40, 5, 200, 30, hwnd, (HMENU)ID_L_TITL, GetModuleHandle(NULL), NULL);
 			cognLabel = CreateWindow("STATIC", "Cognome:", WS_CHILD | WS_VISIBLE, 5, 30, 120, 30, hwnd, (HMENU)ID_L_COGN, GetModuleHandle(NULL), NULL);
 			hEditCogn = CreateWindowEx(WS_EX_CLIENTEDGE,"EDIT", 0, WS_VISIBLE  | WS_CHILD | ES_LEFT | WS_TABSTOP, 125, 30, 190, 20, hwnd, (HMENU)ID_COGN, GetModuleHandle(NULL), NULL);
 			nomeLabel = CreateWindow("STATIC", "Nome:", WS_CHILD | WS_VISIBLE, 5, 60, 120, 30, hwnd, (HMENU)ID_L_NOME, GetModuleHandle(NULL), NULL);

@@ -23,11 +23,6 @@
 *.dll
 *.so.*
 
-
-# Fortran module files
-*.mod
-*.smod
-
 # Compiled Static libraries
 *.lai
 *.la
@@ -67,3 +62,7 @@ vcpkg_installed/
 # test output & cache
 Testing/
 .cache/
+
+# Dev-C++ project files
+*_private.*
+*.layout

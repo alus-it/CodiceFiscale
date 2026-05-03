@@ -1,12 +1,11 @@
 /*============================================================================
  * Name        : cf.h
- * Version     : 1.4
+ * Version     : 1.5
  * Since       : 2004
  * Author      : Alberto Realis-Luc <alberto.realisluc@gmail.com>
  * Web         : http://www.alus.it/pubs/CodiceFiscale
- * Copyright   : © 2004 Alberto Realis-Luc
- * License     : GNU GPL
- * Last change : 5/12/2013
+ * Copyright   : (C) 2004 Alberto Realis-Luc
+ * License     : GNU GPL v2
  * Description : cf module to generate Italian fiscal codes
  *============================================================================*/
 
@@ -21,14 +20,14 @@ comune hash[MAXV]={NULL}; /*tabella di hash*/
 char codfisc[17];
 char comuniCaricati=0;
 
-char *cfCod(char *cog, char *nome, int gg, int mm, int aaaa, char sex, char *codcomune);
-unsigned int h(char *nomeComune); /*funzione di hash*/
-void inserisci(char *nomeComune, char alfa, int num);
-char *prepara(char *stringa);
+char *cfCod(const char *cog, const char *nome, int gg, int mm, int aaaa, char sex, const char *codcomune);
+unsigned int h(const char *nomeComune); /*funzione di hash*/
+void inserisci(const char *nomeComune, char alfa, int num);
+char *prepara(const char *stringa);
 int vocale(char c);
-int cfData(char *cog, char *nom, int gg, int mm, int aaaa, char sex);
+int cfData(const char *cog, const char *nom, int gg, int mm, int aaaa, char sex);
 
-int carica(char *filecomuni) {
+int carica(const char *filecomuni) {
 	FILE *c;
 	char nomeComune[MAXP],agg[2],alfa;
 	int num;
@@ -51,7 +50,7 @@ int carica(char *filecomuni) {
 	return (1);
 }
 
-int cfData(char *cog, char *nom, int gg, int mm, int aaaa, char sex) {
+int cfData(const char *cog, const char *nom, int gg, int mm, int aaaa, char sex) {
 	char /*alfa,nomeComune[MAXP],agg[2],*/cogn[MAXP],nome[MAXP],tre[4];
 	unsigned int num,i,cont=0;
 
@@ -227,7 +226,7 @@ char codiceControllo(void) {
 	return ((num%26)+65);
 }
 
-char *cf(char *cog, char *nom, int gg, int mm, int aaaa, char sex, comune comun) {
+char *cf(const char *cog, const char *nom, int gg, int mm, int aaaa, char sex, comune comun) {
 	char /*alfa,*/tre[4];
 
 	if(comuniCaricati==0) if(carica("comuni.txt")==0) return (strdup("ERRORE FILE"));
@@ -249,7 +248,7 @@ char *cf(char *cog, char *nom, int gg, int mm, int aaaa, char sex, comune comun)
 	return (codfisc);
 }
 
-char *cfCod(char *cog, char *nom, int gg, int mm, int aaaa, char sex, char *codcomune) {
+char *cfCod(const char *cog, const char *nom, int gg, int mm, int aaaa, char sex, const char *codcomune) {
 	if(!cfData(cog,nom,gg,mm,aaaa,sex)) return (strdup("ERRORE DATI"));
 	strcat(codfisc,codcomune);
 	codfisc[15]=codiceControllo();
@@ -257,7 +256,7 @@ char *cfCod(char *cog, char *nom, int gg, int mm, int aaaa, char sex, char *codc
 	return (codfisc);
 }
 
-unsigned int h(char *nomeComune) { /*funzione di hash*/
+unsigned int h(const char *nomeComune) { /*funzione di hash*/
 	unsigned int i,cod=0;
 
 	for(i=0;i<strlen(nomeComune);i++)
@@ -265,7 +264,7 @@ unsigned int h(char *nomeComune) { /*funzione di hash*/
 	return cod;
 }
 
-void inserisci(char *nomeComune, char alfa, int num) {
+void inserisci(const char *nomeComune, char alfa, int num) {
 	comune inserendo;
 	int pos;
 
@@ -281,7 +280,7 @@ void inserisci(char *nomeComune, char alfa, int num) {
 	} else return;
 }
 
-comune ricerca(char *nomeComune) {
+comune ricerca(const char *nomeComune) {
 	comune retVal;
 	int pos;
 	char* comune=prepara(nomeComune);
@@ -297,7 +296,7 @@ comune ricerca(char *nomeComune) {
 	return retVal;
 }
 
-char *prepara(char *stringa) {
+char *prepara(const char *stringa) {
 	char uscita[MAXP+1]="\0",agg[3],c;
 	int i=0;
 
