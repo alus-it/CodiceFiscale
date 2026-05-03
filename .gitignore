@@ -66,3 +66,4 @@ Testing/
 # Dev-C++ project files
 *_private.*
 *.layout
+Makefile.win
