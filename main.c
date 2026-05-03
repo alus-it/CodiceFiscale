@@ -1,19 +1,32 @@
 /*============================================================================
  * Name        : cf.h
- * Version     : 1.4
+ * Version     : 1.5
  * Since       : 2004
  * Author      : Alberto Realis-Luc <alberto.realisluc@gmail.com>
  * Web         : http://www.alus.it/pubs/CodiceFiscale
- * Copyright   : © 2004 Alberto Realis-Luc
- * License     : GNU GPL
- * Last change : 19/11/2015
- * Description : Example program to generate Italian fiscal codes
+ * Copyright   : (C) 2004 Alberto Realis-Luc
+ * License     : GNU GPL v2
+ * Description : Program to generate Italian fiscal codes
  *============================================================================*/
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "cf.h"
+#include <stdlib.h>
+
+#ifdef _WIN32
+#include <windows.h>
+
+void copyToClipboard(const char* text) {
+	const size_t length = strlen(text) + 1;
+	if (length <= 1) return;
+	HGLOBAL hMem = GlobalAlloc(GMEM_MOVEABLE, length);
+	memcpy(GlobalLock(hMem), text, length);
+	GlobalUnlock(hMem);
+	OpenClipboard(0);
+	EmptyClipboard();
+	SetClipboardData(CF_TEXT, hMem);
+	CloseClipboard();
+}
+#endif
 
 int main(void) {
 	char *codfisc,fine=0,alfa,nomeComune[MAXP+3],cogn[MAXP+3],nome[MAXP+3];
@@ -61,6 +74,9 @@ int main(void) {
 		} while(luogoNascita==NULL);
 		codfisc=cf(cogn,nome,gg,mm,aaaa,alfa,luogoNascita);
 		printf("Codice fiscale: %s\n\n",codfisc);
+#ifdef _WIN32
+		copyToClipboard(codfisc);
+#endif
 		printf("Vuoi calcolarne un altro?  (S/N): ");
 		scanf("%c",&alfa);
 		if(alfa!='s'&&alfa!='S') fine=1;
