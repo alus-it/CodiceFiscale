@@ -34,4 +34,4 @@ Su Windows il codice fiscale sara' copiato anche negli appunti pronto per essere
 Se non viene passato alcun parametro il programma chiedera' all'utente di inserire i dati.
 
 ## Versione con interfaccia grafica per Windows
-La versione Win32 _CodiceFiscale.exe_ richiede i sorgenti: _cf.h_, _cg.c_ e _CodiceFiscale.cpp_ e presenta un'interfaccia grafica in cui inserire i dati. Anche in questo caso, il codice fiscale appena calcolato, sara' copiato anche negli appunti pronto per essere incollato altrove.  
+La versione Win32 _CodiceFiscale.exe_ richiede i sorgenti: _cf.h_, _cf.c_ e _CodiceFiscale.cpp_ e presenta un'interfaccia grafica in cui inserire i dati. Anche in questo caso, il codice fiscale appena calcolato, sara' copiato anche negli appunti pronto per essere incollato altrove.  
