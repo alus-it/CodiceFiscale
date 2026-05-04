@@ -11,7 +11,7 @@ Inoltre i caratteri con codice ASCII da 128 a 255 (dunque tutti i caratteri acce
 Dunque su Windows questo software e' utilizzabile solo omettendo tutti gli accenti dai nomi, cognomi e nomi dei luoghi di nascita!
 
 ## Compilazione su Linux
-Questo programma era inizialmente nato su Linux dunque non dovrebbero esserci particolari problemi anche se al momento non vie e' disponibile un Makefile.  
+Questo programma era inizialmente nato su Linux dunque non dovrebbero esserci particolari problemi anche se al momento non e' disponibile un Makefile.  
 
 ## Compilazione su Windows
 Questo progetto e' ancora in grado di compilare su Windows 11 utilizzando Dev-C++.
