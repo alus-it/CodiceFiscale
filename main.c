@@ -29,11 +29,12 @@ void copyToClipboard(const char* text) {
 #endif
 
 void printHelp() {
-	printf("Il programma può essere usato da linea di comando passando i parmateri nel modo seguente: \n");
+	printf("Il programma puo' essere usato da linea di comando passando i parmateri nel modo seguente: \n");
 	printf("cf Rossi,Mario,15/05/1972,M,Roma\n");
 	printf("Non ci devono essere spazi tra i dati, non sono ammessi altri formati.\n");
-	printf("Su Windows il codice fiscale sarà copiato anche negli appunti pronto per essere incollato.\n");
+	printf("Su Windows il codice fiscale sara' copiato anche negli appunti pronto per essere incollato.\n");
 }
+
 
 int main(int argc, char *argv[]) {
 	printf("                    Calcolo del codice fiscale\n");
@@ -133,7 +134,7 @@ int main(int argc, char *argv[]) {
 		} while (gg < 1 || gg > 31);
 		do {
 			printf("Mese di nascita (mm): ");
-			scanf("%d",&mm);
+			scanf("%d", &mm);
 			if (mm < 1 || mm > 12) printf("ERRORE: Mese di nascita non valido.\n");
 		} while(mm < 1 || mm > 12);
 		do {
@@ -144,7 +145,7 @@ int main(int argc, char *argv[]) {
 		getchar();				
 		do {
 			printf("Sesso (M/F): ");
-			scanf("%c",&ch);
+			scanf("%c", &ch);
 			getchar();
 			if (ch != 'm' && ch != 'M' && ch != 'f' && ch != 'F') printf("ERRORE: Inserire solo il carattere 'M' o 'F'.\n");
 		} while (ch != 'm' && ch != 'M' && ch != 'f' && ch != 'F');

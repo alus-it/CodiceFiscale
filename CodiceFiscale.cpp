@@ -199,7 +199,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam) 
 					}
 					if(gg>giorniMesi[mm-1]) {
 						char buffer[40];
-						sprintf(buffer,"%s non può avere %d giorni!",Mesi[mm-1],gg);
+						sprintf(buffer,"%s non puÃ² avere %d giorni!",Mesi[mm-1],gg);
 						MessageBox(hwnd,buffer,"Attenzione",MB_OK|MB_ICONWARNING);
 						SendMessage(hComboDay, CB_SETCURSEL, gg-2, 0);
 						break;
@@ -215,7 +215,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam) 
 						break;
 					}
 					if(mm==2 && gg==29 && !(aaaa%4==0 && (aaaa%100!=0 || aaaa%400==0))) {
-						MessageBox(hwnd,"L'anno specificato non è bisestile.\nQuindi febbraio non può avere 29 giorni!","Attenzione",MB_OK|MB_ICONWARNING);
+						MessageBox(hwnd,"L'anno specificato non Ã¨ bisestile.\nQuindi febbraio non puÃ² avere 29 giorni!","Attenzione",MB_OK|MB_ICONWARNING);
 						SendMessage(hComboDay, CB_SETCURSEL, gg-2, 0);
 						break;
 					}

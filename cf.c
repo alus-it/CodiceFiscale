@@ -73,11 +73,11 @@ int cfData(const char *cog, const char *nom, int gg, int mm, int aaaa, char sex)
 	strcpy(codfisc,tre);
 	strcpy(nome,prepara(nom)); /*si prendono la prima, la terza e la quarta consonante*/
 	cont=0;
-	num=0; /*num conter‡ le consonanti*/
+	num=0; /*num conter√† le consonanti*/
 	for(i=0;i<strlen(nome)&&cont<=3;i++)
 		if(vocale(nome[i])==0) {
 			num++;
-			if(num!=2) { /*non Ë la seconda vero?*/
+			if(num!=2) { /*non √® la seconda vero?*/
 				tre[cont]=nome[i];
 				cont++;
 			}
@@ -145,15 +145,15 @@ int cfData(const char *cog, const char *nom, int gg, int mm, int aaaa, char sex)
 			strcat(codfisc,"T");
 			break;
 	}
-	if(sex!='m'&&sex!='M'&&sex!='f'&&sex!='F') return (-2);
+	if(sex != 'm' && sex != 'M' && sex!= 'f' && sex != 'F') return (-2);
 	switch(sex){
 		case 'm':
-			if(gg<10) strcat(codfisc,"0");
+			if (gg < 10) strcat(codfisc,"0");
 			sprintf(tre,"%d",gg);
 			strcat(codfisc,tre);
 			break;
 		case 'M':
-			if(gg<10) strcat(codfisc,"0");
+			if (gg < 10) strcat(codfisc,"0");
 			sprintf(tre,"%d",gg);
 			strcat(codfisc,tre);
 			break;
@@ -297,56 +297,61 @@ comune ricerca(const char *nomeComune) {
 }
 
 char *prepara(const char *stringa) {
-	char uscita[MAXP+1]="\0",agg[3],c;
-	int i=0;
+	char uscita[MAXP+1]="\0" ,agg[3];
+	unsigned char c;
+	int i = 0;
 
-	while(stringa[i]!='\0' && stringa[i]!='\n' && stringa[i]!='\r') { /*questo perche' fgets() si prende anche il carattere invio*/
-		agg[1]='\0';
-		c=stringa[i++];
-		if((c>='A' && c<='Z') || c==' ') agg[0]=c; /*e' gia' maiuscola o e' uno spazio quindi non fare nulla*/
-		else if(c>='a' && c<='z') agg[0]=c-32; /*e' minuscola e va maisuscolizzata*/
-		else switch(c) { /*casi particolari*/
-			case '‡':
+	while(stringa[i] != '\0' && stringa[i] != '\n' && stringa[i] != '\r') { /*questo perche' fgets() si prende anche il carattere invio*/
+		agg[1] = '\0';
+		c = stringa[i++];
+		if((c >= 'A' && c <= 'Z') || c == ' ') agg[0] = c; /*e' gia' maiuscola o e' uno spazio quindi non fare nulla*/
+		else if(c >= 'a' && c <= 'z') agg[0] = c-32; /*e' minuscola e va maisuscolizzata*/
+		else {
+#ifndef _WIN32
+			//TODO: Questo non funziona su Windows 11, sarebbe necessario usare wchar ed UTF-8
+			switch(c) { //casi particolari
+			case '√†':
+				printf("A accentato!!!!\n");
 				agg[0]='A';
 				agg[1]='\'';
 				agg[2]='\0';
 				break;
-			case 'Ë':
+			case '√®':
 				agg[0]='E';
 				agg[1]='\'';
 				agg[2]='\0';
 				break;
-			case 'È':
+			case '√©':
 				agg[0]='E';
 				agg[1]='\'';
 				agg[2]='\0';
 				break;
-			case 'Ï':
+			case '√¨':
 				agg[0]='I';
 				agg[1]='\'';
 				agg[2]='\0';
 				break;
-			case 'Ú':
+			case '√≤':
 				agg[0]='O';
 				agg[1]='\'';
 				agg[2]='\0';
 				break;
-			case '˘':
+			case '√π':
 				agg[0]='U';
 				agg[1]='\'';
 				agg[2]='\0';
 				break;
-			case '‰':
+			case '√§':
 				agg[0]='A';
 				agg[1]='\'';
 				agg[2]='\0';
 				break;
-			case 'ˆ':
+			case '√∂':
 				agg[0]='O';
 				agg[1]='\'';
 				agg[2]='\0';
 				break;
-			case '¸':
+			case '√º':
 				agg[0]='U';
 				agg[1]='\'';
 				agg[2]='\0';
@@ -356,6 +361,10 @@ char *prepara(const char *stringa) {
 				agg[1]='\'';
 				agg[2]='\0';
 				break;
+		}
+#else
+		agg[0] = '\0';
+#endif
 		}
 		strcat(uscita,agg);
 	}
