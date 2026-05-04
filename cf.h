@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#define MAXP 30 /*numero massimo caratteri del comune*/
+#define MAXP 60 //numero massimo caratteri del comune
 
 typedef struct comunale {
 	const char *nome;

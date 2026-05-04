@@ -14,11 +14,11 @@
 #include <string.h>
 #include "cf.h"
 
-#define MAXV 2126
+#define MAXV 4000 // In linea con il valore massimo ottenibile dalla funzione di hash
 
-comune hash[MAXV]={NULL}; // tabella di hash
+comune hash[MAXV] = {NULL}; // tabella di hash
 char codfisc[17];
-char comuniCaricati=0;
+char comuniCaricati = 0;
 
 char *cfCod(const char *cog, const char *nome, int gg, int mm, int aaaa, char sex, const char *codcomune);
 unsigned int h(const char *nomeComune); // funzione di hash
@@ -28,23 +28,23 @@ int vocale(char c);
 int cfData(const char *cog, const char *nom, int gg, int mm, int aaaa, char sex);
 
 int carica(const char *filecomuni) {
-	FILE *c;
-	char nomeComune[MAXP],agg[2],alfa;
+	FILE *file;
+	char nomeComune[MAXP], agg[2], alfa;
 	int num;
-	if((c=fopen(filecomuni,"r"))==NULL ) return (0);
+	if ((file = fopen(filecomuni, "r")) == NULL) return 0;
 	else {
-		while(!feof(c)) {
+		while (!feof(file)) {
 			nomeComune[0]='\0';
-			fscanf(c,"%c",&agg[0]);
-			agg[1]='\0';
+			fscanf(file, "%c", &agg[0]);
+			agg[1] = '\0';
 			do {
-				strcat(nomeComune,agg);
-				fscanf(c,"%c",&agg[0]);
-			} while(agg[0]!='\t');
-			fscanf(c,"%c%d\n",&alfa,&num);
-			inserisci(strdup(nomeComune),alfa,num);
+				strcat(nomeComune, agg);
+				fscanf(file, "%c", &agg[0]);
+			} while (agg[0] != '\t');
+			fscanf(file,"%c%d\n", &alfa, &num);
+			inserisci(strdup(nomeComune), alfa, num);
 		}
-		fclose(c);
+		fclose(file);
 		comuniCaricati=1;
 	}
 	return 1;
@@ -52,8 +52,7 @@ int carica(const char *filecomuni) {
 
 int cfData(const char *cog, const char *nom, int gg, int mm, int aaaa, char sex) {
 	char cogn[MAXP], nome[MAXP], tre[4];
-	unsigned int num,i,cont=0;
-
+	unsigned int num, i, cont=0;
 	strcpy(cogn, prepara(cog));
 	for(i=0; i<strlen(cogn) && cont<=3; i++)
 		if(vocale(cogn[i])==0) { // si prendono le prime 3 consonanti
@@ -107,7 +106,7 @@ int cfData(const char *cog, const char *nom, int gg, int mm, int aaaa, char sex)
 	if (aaaa < 10) strcat(codfisc, "0");
 	sprintf(tre, "%d", aaaa);
 	strcat(codfisc, tre);
-	switch(mm ){
+	switch(mm){
 		case 1:
 			strcat(codfisc,"A");
 			break;
@@ -173,7 +172,6 @@ char codiceControllo(void) {
 	int num = 0, i , cont = 0; //somma dei caratteri, indica quando sono in posizione pari
 	const int disp[] = {1,0,5,7,9,13,15,17,19,21,2,4,18,20,11,3,6,8,12,14,16,10,22,25,24,23};
 	char tre[4];
-
 	tre[1]='\0';
 	for(i=0;i<6;i++) { // prime 6 lettere
 		if(cont) num=num+(codfisc[i]-65); // pari
@@ -228,7 +226,6 @@ char codiceControllo(void) {
 
 char *cf(const char *cog, const char *nom, int gg, int mm, int aaaa, char sex, comune comun) {
 	char tre[4];
-
 	if(comuniCaricati==0) if(carica("comuni.txt")==0) return strdup("ERRORE FILE");
 	if(!cfData(cog, nom, gg, mm, aaaa, sex)) return strdup("ERRORE DATI");
 	if(comun!=NULL) {
@@ -258,39 +255,36 @@ char *cfCod(const char *cog, const char *nom, int gg, int mm, int aaaa, char sex
 
 unsigned int h(const char *nomeComune) { // funzione di hash
 	unsigned int i, cod=0;
-
-	for(i=0;i<strlen(nomeComune);i++) {
-		cod = cod + nomeComune[i];
+	const size_t len = strlen(nomeComune);
+	for(i = 0; i < len; i++) {
+		cod =+ nomeComune[i];
 	}
 	return cod;
 }
 
 void inserisci(const char *nomeComune, char alfa, int num) {
 	comune inserendo;
-	int pos;
-
-	inserendo=(comune)malloc(sizeof(struct comunale));
-	if(inserendo!=NULL ) {
-		inserendo->nome=nomeComune;
-		inserendo->alfa=alfa;
-		inserendo->num=num;
-		pos=h(nomeComune);
-		if(hash[pos]==NULL ) inserendo->nx=NULL;
-		else inserendo->nx=hash[pos];
-		hash[pos]=inserendo;
-	} else return;
+	inserendo = (comune)malloc(sizeof(struct comunale));
+	if(inserendo == NULL) return;
+	inserendo->nome = nomeComune;
+	inserendo->alfa = alfa;
+	inserendo->num = num;
+	const unsigned int pos = h(nomeComune);
+	if (pos >= MAXV) printf("ERRORE FATALE!!!!\n");
+	//TODO: assert(pos < MAXV);
+	if(hash[pos] == NULL) inserendo->nx = NULL;
+	else inserendo->nx = hash[pos];
+	hash[pos] = inserendo;
 }
 
 comune ricerca(const char *nomeComune) {
 	comune retVal;
-	int pos;
-	char* comune=prepara(nomeComune);
-
-	pos=h(comune);
-	if(strcmp(hash[pos]->nome,comune)==0) return hash[pos];
+	char* comune = prepara(nomeComune);
+	const unsigned int pos = h(comune);
+	if (strcmp(hash[pos]->nome, comune)==0) return hash[pos];
 	else {
-		retVal=hash[pos];
-		while(strcmp(retVal->nome,comune)!=0&&retVal->nx!=NULL) retVal=retVal->nx;
+		retVal = hash[pos];
+		while (strcmp(retVal->nome, comune)!=0 && retVal->nx!=NULL) retVal=retVal->nx;
 		if(strcmp(retVal->nome,comune)!=0) retVal=NULL;
 	}
 	free(comune);
@@ -298,11 +292,10 @@ comune ricerca(const char *nomeComune) {
 }
 
 char *prepara(const char *stringa) {
-	char uscita[MAXP+1]="\0" ,agg[3];
+	char uscita[MAXP+1]="\0", agg[3];
 	unsigned char c;
 	int i = 0;
-
-	while(stringa[i] != '\0' && stringa[i] != '\n' && stringa[i] != '\r') { // questo perche' fgets() si prende anche il carattere invio
+	while (stringa[i] != '\0' && stringa[i] != '\n' && stringa[i] != '\r') { // questo perche' fgets() si prende anche il carattere invio
 		agg[1] = '\0';
 		c = stringa[i++];
 		if((c >= 'A' && c <= 'Z') || c == ' ') agg[0] = c; // e' gia' maiuscola o e' uno spazio quindi non fare nulla
@@ -374,36 +367,27 @@ char *prepara(const char *stringa) {
 int vocale(char c) {
 	switch(c){
 		case 'A':
-			return 1;
 		case 'E':
-			return 1;
 		case 'I':
-			return 1;
 		case 'O':
-			return 1;
 		case 'U':
 			return 1;
 		default:
-			if(c>65&&c<=90) return 0; //consonante
+			if(c>65 && c<=90) return 0; //consonante
 			else return -1; // altro carattere
 	}
 }
 
 void pulisci(void) {
-	int i;
-	comune dato,preced;
-
-	if(!comuniCaricati) return;
-	for(i=0;i<MAXV;i++) {
-		if(hash[i]!=NULL) {
-			dato=hash[i];
-			while(dato->nx!=NULL) {
-				preced=dato;
-				free(preced);
-				dato=dato->nx;
-			}
+	if (!comuniCaricati) return;
+	comune dato;
+	for (unsigned int i = 0; i < MAXV; i++) {
+		dato = hash[i];
+		while (dato != NULL) {
+			comune next = dato->nx;
 			free(dato);
-			hash[i]=NULL;
+			dato = next;
 		}
+		hash[i] = NULL;
 	}
 }
