@@ -15,6 +15,12 @@
 #ifdef _WIN32
 #include <windows.h>
 
+void clearClipboard() {
+	OpenClipboard(0);
+	EmptyClipboard();
+	CloseClipboard();
+}
+
 void copyToClipboard(const char* text) {
 	const size_t length = strlen(text) + 1;
 	if (length <= 1) return;
@@ -161,9 +167,13 @@ int main(int argc, char *argv[]) {
 		if(ch != 's' && ch != 'S') fine=1;
 		else {
 			scanf("%c", &ch);
-			retVal = EXIT_FAILURE;
+			retVal = EXIT_FAILURE; // Tornera' positivo appena un nuovo CF sara' calcolato correttamente
 		}
 	}
+
+#ifdef _WIN32
+	if (retVal == EXIT_FAILURE) clearClipboard(); // Se non ha funzionato rimuovi il (precedente) CF dagli appunti
+#endif
 
 	pulisci();
 	return retVal;
