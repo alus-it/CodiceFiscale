@@ -29,7 +29,7 @@ void copyToClipboard(const char* text) {
 #endif
 
 void printHelp() {
-	printf("Il programma puo' essere usato da linea di comando passando i parmateri nel modo seguente: \n");
+	printf("Il programma puo' essere usato da linea di comando passando i parametri nel modo seguente: \n");
 	printf("cf Rossi,Mario,15/05/1972,M,Roma\n");
 	printf("Non ci devono essere spazi tra i dati, non sono ammessi altri formati.\n");
 	printf("Su Windows il codice fiscale sara' copiato anche negli appunti pronto per essere incollato.\n");

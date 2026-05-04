@@ -311,7 +311,6 @@ char *prepara(const char *stringa) {
 			//TODO: Questo non funziona su Windows 11, sarebbe necessario usare wchar ed UTF-8
 			switch(c) { //casi particolari
 			case 'à':
-				printf("A accentato!!!!\n");
 				agg[0]='A';
 				agg[1]='\'';
 				agg[2]='\0';
