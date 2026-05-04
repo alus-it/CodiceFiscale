@@ -28,28 +28,21 @@ void copyToClipboard(const char* text) {
 }
 #endif
 
-void printHelp() {
-	printf("Il programma puo' essere usato da linea di comando passando i parametri nel modo seguente: \n");
-	printf("cf Rossi,Mario,15/05/1972,M,Roma\n");
-	printf("Non ci devono essere spazi tra i dati, non sono ammessi altri formati.\n");
-	printf("Su Windows il codice fiscale sara' copiato anche negli appunti pronto per essere incollato.\n");
-}
-
-
 int main(int argc, char *argv[]) {
-	printf("                    Calcolo del codice fiscale\n");
-	if (argc > 2) {
-		printHelp();
-		return EXIT_FAILURE;
-	}
-
 	char *codfisc, ch, nomeComune[MAXP+3], cogn[MAXP+3], nome[MAXP+3], valid = 0;
 	int gg, mm, aaaa, retVal = EXIT_FAILURE;
-
-	// Con un argomento ci aspettiamo i dati da linea di comando
-	if (argc == 2) {
+	printf("                    Calcolo del codice fiscale\n");
+	
+	// Con piu' di un argomento ci aspettiamo i dati da linea di comando
+	if (argc > 1) {
+		char allArgs[MAXP * 3];
+		strcpy(allArgs, argv[1]);
+		for (int i = 2; i < argc; ++i) {
+  			strcat(allArgs, " ");
+			strcat(allArgs, argv[i]);
+		}
 		char *token = NULL;
-		token = strtok(argv[1], ",");
+		token = strtok(allArgs, ",");
 		if (token != NULL) {
 			valid = strlen(token) > 0;
 			if (valid) {
@@ -69,7 +62,7 @@ int main(int argc, char *argv[]) {
 		if (valid && token != NULL) {
 			valid = sscanf(token, "%d/%d/%d", &gg, &mm, &aaaa) == 3 && gg >= 1 && gg <= 31 && mm >= 1 && mm <= 12 && aaaa >= 0;
 			if (valid) {
-				printf("Data di nascita: %02d/%02d/%4d:\n", gg, mm, aaaa);
+				printf("Data di nascita: %02d/%02d/%4d\n", gg, mm, aaaa);
 				token = strtok(NULL, ",");
 			} else printf("ERRORE: Data di nascita non valida.\n");
 		}
@@ -90,7 +83,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	// Questo e' il momento di caricare l'elenco dei luoghi di nascita ...
-	if (argc == 1 || (argc == 2 && valid)) { // da evitare se l'argomento contiene dati non validi
+	if (argc == 1 || (argc > 1 && valid)) { // da evitare se l'argomento contiene dati non validi
 		printf("Lettura comuni in corso....");
 		if (!carica("comuni.txt")) {
 			printf(" FALLITO\nERRORE: File 'comuni.txt' non trovato o danneggiato!\n");
@@ -100,7 +93,7 @@ int main(int argc, char *argv[]) {
 	}
 	
 	// Processa i dati da argomento se presenti e validi
-	if (argc == 2) {
+	if (argc > 1) {
 		if (valid) {
 			comune luogoNascita = ricerca(nomeComune);
 			if (luogoNascita != NULL) {
@@ -112,8 +105,10 @@ int main(int argc, char *argv[]) {
 				retVal = EXIT_SUCCESS;
 			} else printf("ERRORE: Comune non trovato.\n");
 		} else {
-			printf("ERRORE: Dati mancanti o non inseriti correttamente.\n");
-			printHelp();
+			printf("Il programma puo' essere usato da linea di comando passando i parametri nel modo seguente: \n");
+			printf("cf Rossi,Mario,15/05/1972,M,Roma\n");
+			printf("Non sono ammessi altri formati.\n");
+			printf("Su Windows il codice fiscale sara' copiato anche negli appunti pronto per essere incollato.\n");
 		}
 	}
 
