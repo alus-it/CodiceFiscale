@@ -21,32 +21,31 @@ char codfisc[17];
 char comuniCaricati = 0;
 
 char *cfCod(const char *cog, const char *nome, int gg, int mm, int aaaa, char sex, const char *codcomune);
-unsigned int h(const char *nomeComune); // funzione di hash
-void inserisci(const char *nomeComune, char alfa, int num);
+unsigned int h(const char *nomeLuogo); // funzione di hash
+void inserisci(const char *nomeLuogo, char alfa, int num);
 char *prepara(const char *stringa);
 int vocale(char c);
 int cfData(const char *cog, const char *nom, int gg, int mm, int aaaa, char sex);
+char codiceControllo(void);
 
 int carica(const char *filecomuni) {
-	FILE *file;
-	char nomeComune[MAXP], agg[2], alfa;
-	int num;
+	FILE *file = NULL;
 	if ((file = fopen(filecomuni, "r")) == NULL) return 0;
-	else {
-		while (!feof(file)) {
-			nomeComune[0]='\0';
-			fscanf(file, "%c", &agg[0]);
+	char nomeLuogo[MAXP], agg[2], alfa;
+	int num;
+	while (!feof(file)) {
+		nomeLuogo[0]='\0';
+		if (fscanf(file, "%c", &agg[0])) {
 			agg[1] = '\0';
 			do {
-				strcat(nomeComune, agg);
-				fscanf(file, "%c", &agg[0]);
+				strcat(nomeLuogo, agg);
+				if (!fscanf(file, "%c", &agg[0])) agg[0] = '\0';
 			} while (agg[0] != '\t');
-			fscanf(file,"%c%d\n", &alfa, &num);
-			inserisci(strdup(nomeComune), alfa, num);
+			if (fscanf(file,"%c%d\n", &alfa, &num) == 2) inserisci(strdup(nomeLuogo), alfa, num);
 		}
-		fclose(file);
-		comuniCaricati=1;
 	}
+	fclose(file);
+	comuniCaricati = 1;
 	return 1;
 }
 
@@ -253,23 +252,23 @@ char *cfCod(const char *cog, const char *nom, int gg, int mm, int aaaa, char sex
 	return codfisc;
 }
 
-unsigned int h(const char *nomeComune) { // funzione di hash
+unsigned int h(const char *nomeLuogo) { // funzione di hash
 	unsigned int i, cod=0;
-	const size_t len = strlen(nomeComune);
+	const size_t len = strlen(nomeLuogo);
 	for(i = 0; i < len; i++) {
-		cod =+ nomeComune[i];
+		cod =+ nomeLuogo[i];
 	}
 	return cod;
 }
 
-void inserisci(const char *nomeComune, char alfa, int num) {
+void inserisci(const char *nomeLuogo, char alfa, int num) {
 	comune inserendo;
 	inserendo = (comune)malloc(sizeof(struct comunale));
 	if(inserendo == NULL) return;
-	inserendo->nome = nomeComune;
+	inserendo->nome = nomeLuogo;
 	inserendo->alfa = alfa;
 	inserendo->num = num;
-	const unsigned int pos = h(nomeComune);
+	const unsigned int pos = h(nomeLuogo);
 	if (pos < MAXV) {
 		if(hash[pos] == NULL) inserendo->nx = NULL;
 		else inserendo->nx = hash[pos];
@@ -278,17 +277,17 @@ void inserisci(const char *nomeComune, char alfa, int num) {
 	
 }
 
-comune ricerca(const char *nomeComune) {
+comune ricerca(const char *nomeLuogo) {
 	comune retVal;
-	char* comune = prepara(nomeComune);
-	const unsigned int pos = h(comune);
-	if (strcmp(hash[pos]->nome, comune)==0) return hash[pos];
+	char* luogo = prepara(nomeLuogo);
+	const unsigned int pos = h(luogo);
+	if (strcmp(hash[pos]->nome, luogo)==0) return hash[pos];
 	else {
 		retVal = hash[pos];
-		while (strcmp(retVal->nome, comune)!=0 && retVal->nx!=NULL) retVal=retVal->nx;
-		if(strcmp(retVal->nome,comune)!=0) retVal=NULL;
+		while (strcmp(retVal->nome, luogo)!=0 && retVal->nx!=NULL) retVal=retVal->nx;
+		if(strcmp(retVal->nome, luogo)!=0) retVal=NULL;
 	}
-	free(comune);
+	free(luogo);
 	return retVal;
 }
 
@@ -301,10 +300,9 @@ char *prepara(const char *stringa) {
 		c = stringa[i++];
 		if((c >= 'A' && c <= 'Z') || c == ' ') agg[0] = c; // e' gia' maiuscola o e' uno spazio quindi non fare nulla
 		else if(c >= 'a' && c <= 'z') agg[0] = c-32; // e' minuscola e va "maisuscolizzata"
-		else {
-#ifndef _WIN32
-			//TODO: Questo non funziona su Windows 11, sarebbe necessario usare wchar ed UTF-8
-			switch(c) { //casi particolari
+		else agg[0] = '\0'; //FIXME: Non tiene conto degli accenti!!
+			/* TODO: Questo non funziona piu' usando UTF-8: necessario usare wchar
+			switch(c) { // casi particolari
 			case 'à':
 				agg[0]='A';
 				agg[1]='\'';
@@ -355,12 +353,9 @@ char *prepara(const char *stringa) {
 				agg[1]='\'';
 				agg[2]='\0';
 				break;
-		}
-#else
-		agg[0] = '\0';
-#endif
-		}
-		strcat(uscita,agg);
+			}*/
+
+		strcat(uscita, agg);
 	}
 	return strdup(uscita);
 }

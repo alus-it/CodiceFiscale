@@ -4,6 +4,7 @@
  * Since       : 2004
  * Author      : Alberto Realis-Luc <alberto.realisluc@gmail.com>
  * Web         : http://www.alus.it/pubs/CodiceFiscale
+ * Repository  : https://github.com/alus-it/CodiceFiscale
  * Copyright   : (C) 2004 Alberto Realis-Luc
  * License     : GNU GPL v2
  * Description : Program to generate Italian fiscal codes
@@ -49,7 +50,7 @@ int main(int argc, char *argv[]) {
 		}
 		char *token = NULL;
 		token = strtok(allArgs, ",");
-		if (token != NULL) {
+		if ((valid = (token != NULL))) {
 			valid = strlen(token) > 0;
 			if (valid) {
 				strcpy(cogn, token);
@@ -57,7 +58,7 @@ int main(int argc, char *argv[]) {
 				token = strtok(NULL, ",");
 			} else printf("ERRORE: Cognome vuoto.\n");
 		}
-		if (valid && token != NULL) {
+		if ((valid = (valid && token != NULL))) {
 			valid = strlen(token) > 0;
 			if (valid) {
 				strcpy(nome, token);
@@ -65,21 +66,21 @@ int main(int argc, char *argv[]) {
 				token = strtok(NULL, ",");
 			} else printf("ERRORE: Nome vuoto.\n");
 		}
-		if (valid && token != NULL) {
+		if ((valid = (valid && token != NULL))) {
 			valid = sscanf(token, "%d/%d/%d", &gg, &mm, &aaaa) == 3 && gg >= 1 && gg <= 31 && mm >= 1 && mm <= 12 && aaaa >= 0;
 			if (valid) {
 				printf("Data di nascita: %02d/%02d/%4d\n", gg, mm, aaaa);
 				token = strtok(NULL, ",");
 			} else printf("ERRORE: Data di nascita non valida.\n");
 		}
-		if (valid && token != NULL) {
+		if ((valid = (valid && token != NULL))) {
 			valid = sscanf(token, "%c", &ch) == 1 && (ch == 'm' || ch == 'M' || ch == 'f' || ch == 'F');
 			if (valid) {
 				printf("Sesso: %c\n", ch);
 				token = strtok (NULL, ",");
 			} else printf("ERRORE: Sesso non valido: inserire solo il carattere 'M' o 'F'\n");
 		}
-		if (valid && token != NULL) {
+		if ((valid = (valid && token != NULL))) {
 			valid = strlen(token) > 0;
 			if (valid) {
 				strcpy(nomeComune, token);
@@ -111,6 +112,7 @@ int main(int argc, char *argv[]) {
 				retVal = EXIT_SUCCESS;
 			} else printf("ERRORE: Comune non trovato.\n");
 		} else {
+			printf("ERRORE: Dati incompleti o non validi.\n");
 			printf("Il programma puo' essere usato da linea di comando passando i parametri nel modo seguente: \n");
 			printf("cf Rossi,Mario,15/05/1972,M,Roma\n");
 			printf("Non sono ammessi altri formati.\n");
@@ -121,40 +123,38 @@ int main(int argc, char *argv[]) {
 	// Oppure continua con il normale inserimento dati manuale
 	char fine = argc==1 ? 0 : 1;
 	while (!fine) {
-		comune luogoNascita;
 		printf("\n\n");
 		printf("Cognome: ");
-		fgets(cogn, MAXP+3, stdin);
+		if (!fgets(cogn, MAXP+3, stdin)) break;
 		printf("Nome: ");
-		fgets(nome, MAXP+3, stdin);
+		if (!fgets(nome, MAXP+3, stdin)) break;
 		printf("Inserire la data di nascita:\n");
 		do {
 			printf("Giorno di nascita (gg): ");
-			scanf("%d", &gg);
-			if (gg < 1 || gg > 31) printf("ERRORE: Giorno di nascita non valido.\n");
+			if (!scanf("%d", &gg) || gg < 1 || gg > 31) printf("ERRORE: Giorno di nascita non valido.\n");
 		} while (gg < 1 || gg > 31);
 		do {
 			printf("Mese di nascita (mm): ");
-			scanf("%d", &mm);
-			if (mm < 1 || mm > 12) printf("ERRORE: Mese di nascita non valido.\n");
+			if (!scanf("%d", &mm) || mm < 1 || mm > 12) printf("ERRORE: Mese di nascita non valido.\n");
 		} while(mm < 1 || mm > 12);
 		do {
 			printf("Anno di nascita (aaaa): ");
-			scanf("%d", &aaaa);
-			if (aaaa < 0) printf("ERRORE: Anno di nascita non valido.\n");
+			if (!scanf("%d", &aaaa) || aaaa < 0) printf("ERRORE: Anno di nascita non valido.\n");
 		} while (aaaa < 0);
 		getchar();				
 		do {
 			printf("Sesso (M/F): ");
-			scanf("%c", &ch);
+			if (!scanf("%c", &ch) || ( ch != 'm' && ch != 'M' && ch != 'f' && ch != 'F')) printf("ERRORE: Inserire solo il carattere 'M' o 'F'.\n");
 			getchar();
-			if (ch != 'm' && ch != 'M' && ch != 'f' && ch != 'F') printf("ERRORE: Inserire solo il carattere 'M' o 'F'.\n");
 		} while (ch != 'm' && ch != 'M' && ch != 'f' && ch != 'F');
+		comune luogoNascita = NULL;
 		do {
 			printf("Luogo di nascita: ");
-			fgets(nomeComune, MAXP+3, stdin);
-			luogoNascita = ricerca(nomeComune);
-			if(luogoNascita == NULL) printf("ERRORE: Comune o stato estero non trovato.\n");
+			if (!fgets(nomeComune, MAXP+3, stdin)) printf("ERRORE: nel leggere il luogo di nascita.\n");
+			else {
+				luogoNascita = ricerca(nomeComune);
+				if (luogoNascita == NULL) printf("ERRORE: Comune o stato estero non trovato.\n");
+			}
 		} while (luogoNascita == NULL);
 		codfisc = cf(cogn, nome, gg, mm, aaaa, ch, luogoNascita);
 		printf("Codice fiscale: %s\n\n", codfisc);
@@ -163,10 +163,10 @@ int main(int argc, char *argv[]) {
 #endif
 		retVal = EXIT_SUCCESS;
 		printf("Vuoi calcolarne un altro?  (S/N): ");
-		scanf("%c", &ch);
-		if(ch != 's' && ch != 'S') fine=1;
+		if (!scanf("%c", &ch)) break;
+		if (ch != 's' && ch != 'S') fine=1;
 		else {
-			scanf("%c", &ch);
+			if (!scanf("%c", &ch)) break;
 			retVal = EXIT_FAILURE; // Tornera' positivo appena un nuovo CF sara' calcolato correttamente
 		}
 	}
