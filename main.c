@@ -95,7 +95,7 @@ int main(int argc, char *argv[]) {
 			printf(" FALLITO\nERRORE: File 'comuni.txt' non trovato o danneggiato!\n");
 			return EXIT_FAILURE;
 		}
-		printf(" OK\n\n\n");
+		printf(" OK\n\n");
 	}
 	
 	// Processa i dati da argomento se presenti e validi
@@ -151,10 +151,10 @@ int main(int argc, char *argv[]) {
 			if (ch != 'm' && ch != 'M' && ch != 'f' && ch != 'F') printf("ERRORE: Inserire solo il carattere 'M' o 'F'.\n");
 		} while (ch != 'm' && ch != 'M' && ch != 'f' && ch != 'F');
 		do {
-			printf("Comune di nascita: ");
+			printf("Luogo di nascita: ");
 			fgets(nomeComune, MAXP+3, stdin);
 			luogoNascita = ricerca(nomeComune);
-			if(luogoNascita == NULL) printf("ERRORE: Comune non trovato.\n");
+			if(luogoNascita == NULL) printf("ERRORE: Comune o stato estero non trovato.\n");
 		} while (luogoNascita == NULL);
 		codfisc = cf(cogn, nome, gg, mm, aaaa, ch, luogoNascita);
 		printf("Codice fiscale: %s\n\n", codfisc);

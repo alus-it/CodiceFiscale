@@ -270,11 +270,12 @@ void inserisci(const char *nomeComune, char alfa, int num) {
 	inserendo->alfa = alfa;
 	inserendo->num = num;
 	const unsigned int pos = h(nomeComune);
-	if (pos >= MAXV) printf("ERRORE FATALE!!!!\n");
-	//TODO: assert(pos < MAXV);
-	if(hash[pos] == NULL) inserendo->nx = NULL;
-	else inserendo->nx = hash[pos];
-	hash[pos] = inserendo;
+	if (pos < MAXV) {
+		if(hash[pos] == NULL) inserendo->nx = NULL;
+		else inserendo->nx = hash[pos];
+		hash[pos] = inserendo;
+	} else printf("ERRORE: dimensioni tabella di hash insufficienti\n");
+	
 }
 
 comune ricerca(const char *nomeComune) {
