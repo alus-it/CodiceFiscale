@@ -24,6 +24,7 @@ char *cfCod(const char *cog, const char *nome, int gg, int mm, int aaaa, char se
 unsigned int h(const char *nomeLuogo); // funzione di hash
 void inserisci(const char *nomeLuogo, char alfa, int num);
 char *prepara(const char *stringa);
+comune ricercaDiretta(const char *nomeLuogo);
 int vocale(char c);
 int cfData(const char *cog, const char *nom, int gg, int mm, int aaaa, char sex);
 char codiceControllo(void);
@@ -41,7 +42,7 @@ int carica(const char *filecomuni) {
 				strcat(nomeLuogo, agg);
 				if (!fscanf(file, "%c", &agg[0])) agg[0] = '\0';
 			} while (agg[0] != '\t');
-			if (fscanf(file,"%c%d\n", &alfa, &num) == 2) inserisci(strdup(nomeLuogo), alfa, num);
+			if (fscanf(file,"%c%d\n", &alfa, &num) == 2) inserisci(nomeLuogo, alfa, num);
 		}
 	}
 	fclose(file);
@@ -262,33 +263,52 @@ unsigned int h(const char *nomeLuogo) { // funzione di hash
 }
 
 void inserisci(const char *nomeLuogo, char alfa, int num) {
-	comune inserendo;
-	inserendo = (comune)malloc(sizeof(struct comunale));
-	if(inserendo == NULL) return;
-	inserendo->nome = nomeLuogo;
+	char* luogo = prepara(nomeLuogo);
+	if (luogo == NULL) return;
+	if (ricercaDiretta(luogo) != NULL) { // Se il nome esiste gia' non inerirlo nuovamente
+		free(luogo);
+		return;
+	}
+	comune inserendo = (comune)malloc(sizeof(struct comunale));
+	if(inserendo == NULL) {
+		free(luogo);
+		return;
+	}
+	inserendo->nome = luogo;
 	inserendo->alfa = alfa;
 	inserendo->num = num;
-	const unsigned int pos = h(nomeLuogo);
+	const unsigned int pos = h(luogo);
 	if (pos < MAXV) {
 		if(hash[pos] == NULL) inserendo->nx = NULL;
 		else inserendo->nx = hash[pos];
 		hash[pos] = inserendo;
-	} else printf("ERRORE: dimensioni tabella di hash insufficienti\n");
-	
+	} else {
+		printf("ERRORE: dimensioni tabella di hash insufficienti.\n");
+		printf("h: %d\n", pos);
+		printf("Luogo: %s\n", nomeLuogo);
+		free(inserendo);
+		free(luogo);
+	}
+}
+
+comune ricercaDiretta(const char *nomeLuogo) {
+	const unsigned int pos = h(nomeLuogo);
+	if (hash[pos] == NULL) return NULL;
+	comune luogo = hash[pos];
+	if (strcmp(luogo->nome, nomeLuogo) == 0) return luogo;
+	while(luogo->nx != NULL) {
+		luogo = luogo->nx;
+		if (strcmp(luogo->nome, nomeLuogo) == 0) return luogo;
+	}
+	return NULL;
 }
 
 comune ricerca(const char *nomeLuogo) {
-	comune retVal;
-	char* luogo = prepara(nomeLuogo);
-	const unsigned int pos = h(luogo);
-	if (strcmp(hash[pos]->nome, luogo)==0) return hash[pos];
-	else {
-		retVal = hash[pos];
-		while (strcmp(retVal->nome, luogo)!=0 && retVal->nx!=NULL) retVal=retVal->nx;
-		if(strcmp(retVal->nome, luogo)!=0) retVal=NULL;
-	}
-	free(luogo);
-	return retVal;
+	if (nomeLuogo == NULL) return NULL;
+	char *nomePreparato = prepara(nomeLuogo);
+	const comune luogo = ricercaDiretta(nomePreparato);
+	free(nomePreparato);
+	return luogo;
 }
 
 char *prepara(const char *stringa) {
