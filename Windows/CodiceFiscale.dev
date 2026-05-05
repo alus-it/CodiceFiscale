@@ -4,7 +4,7 @@ Name=CodiceFiscale
 Type=0
 Ver=2
 ObjFiles=
-Includes=
+Includes=..\src
 Libs=
 PrivateResource=CodiceFiscale_private.rc
 ResourceIncludes=
@@ -14,7 +14,7 @@ CppCompiler=
 Linker=
 IsCpp=1
 Icon=CodiceFiscale.ico
-ExeOutput=
+ExeOutput=..\
 ObjectOutput=build\CodiceFiscale
 LogOutput=
 LogOutputEnabled=0
@@ -28,8 +28,8 @@ CustomMakefile=
 IncludeVersionInfo=1
 SupportXPThemes=0
 CompilerSet=0
-CompilerSettings=0000001100101000000000000
-UnitCount=7
+CompilerSettings=000000c100101000000000000
+UnitCount=6
 
 [VersionInfo]
 Major=0
@@ -61,17 +61,17 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit2]
-FileName=cf.c
+FileName=CodiceFiscale.ico
 CompileCpp=1
 Folder=CodiceFiscale
-Compile=1
-Link=1
+Compile=0
+Link=0
 Priority=1000
 OverrideBuildCmd=0
-BuildCmd=$(CPP) -c cf.c -o cf.o $(CXXFLAGS)
+BuildCmd=
 
 [Unit3]
-FileName=cf.h
+FileName=resource.h
 CompileCpp=1
 Folder=CodiceFiscale
 Compile=1
@@ -81,27 +81,28 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit4]
-FileName=comuni.txt
+FileName=resources.rc
 Folder=CodiceFiscale
-Compile=0
+Compile=1
 Link=0
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
 [Unit5]
-FileName=CodiceFiscale.ico
-Folder=CodiceFiscale
-Compile=0
-Link=0
+FileName=..\src\cf.c
+Folder=
+Compile=1
+Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
+CompileCpp=1
 
 [Unit6]
-FileName=resource.h
+FileName=..\src\cf.h
 CompileCpp=1
-Folder=CodiceFiscale
+Folder=
 Compile=1
 Link=1
 Priority=1000
