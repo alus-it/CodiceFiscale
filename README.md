@@ -11,17 +11,16 @@ Questo programma usava i caratteri accentati usando la codifica ASCII estesa (da
 Quindi questo software, al momento, e' utilizzabile solo omettendo tutti gli accenti dai nomi, cognomi e dai nomi dei luoghi di nascita!
 
 ## Variante a linea di comando
-La versione a linea di comando *cf.exe* richiede i sorgenti nella cartella _src_ e puo' funzionare in due modi:
-* ricevendo i dati tramite argomenti sulla line di comando
-* oppure chiedendo all'utente di inserire i dati
+La versione a linea di comando *cf.exe* richiede i sorgenti nella cartella _src_ e puo' funzionare in tre modi:
+* senza argomenti: usando il file comuni.txt nella stessa directory come elenco luoghi di nascita e chiedendo di inserire i dati
+* come prima ma specificando il percorso del file con l'elenco dei luoghi di nascita da usare come unico argomento
+* specificando il file del luoghi di nascita come primo argomento ed i dati della persona come argomenti successivi
 
-I parametri della persona a cui si vuole calcolare il codice fiscale possono essere passati come un singolo argomento nel modo seguente:  
-
-    cf Rossi,Mario,15/05/1972,M,Roma  
+Ad esempio:  
+    cf comuni.txt Rossi,Mario,15/05/1972,M,Roma  
 
 Gli spazi sono ammessi nel cognome, nel nome e nel nome del luogo di nascita, non sono ammessi altri formati.  
 Su Windows il codice fiscale sara' copiato anche negli appunti pronto per essere incollato laddove richiesto.  
-Se non viene passato alcun parametro il programma chiedera' all'utente di inserire i dati.
 
 ## Variante con interfaccia grafica per Windows
 L'eseguibile _CodiceFiscale.exe_ presenta un'interfaccia grafica Win32 in cui inserire i dati. Anche in questo caso, il codice fiscale appena calcolato, sara' copiato anche negli appunti pronto per essere incollato altrove.
