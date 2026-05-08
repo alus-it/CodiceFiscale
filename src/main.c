@@ -12,6 +12,7 @@
 
 #include "cf.h"
 #include <stdlib.h>
+#define FILE_COMUNI "comuni.txt"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -36,18 +37,26 @@ void copyToClipboard(const char* text) {
 #endif
 
 int main(int argc, char *argv[]) {
-	char *codfisc, ch, nomeComune[MAXP+3], cogn[MAXP+3], nome[MAXP+3], valid = 0;
-	int gg, mm, aaaa, retVal = EXIT_FAILURE;
 	printf("                    Calcolo del codice fiscale\n");
-	
+
+	// Con piu' di un argomento ci aspettiamo il percorso del file luoghi di nascita ed i dati da linea di comando
+	printf("File luoghi di nascita: %s - Lettura in corso....", argc > 1 ? argv[1] : FILE_COMUNI);
+	if (!carica(argc > 1 ? argv[1] : FILE_COMUNI)) {
+		printf(" FALLITO\nERRORE: File luoghi di nascita non trovato o danneggiato!\n");
+		return EXIT_FAILURE;
+	}
+	printf(" OK\n");
+
+	char *codfisc, ch, nomeComune[MAXP + 3], cogn[MAXP + 3], nome[MAXP + 3], valid = 1;
+	int gg, mm, aaaa, retVal = EXIT_FAILURE;
+
 	// Con piu' di 2 argomenti dal secondo in poi ci aspettiamo i dati della persona a cui calcolare il codice fiscale
 	if (argc > 2) {
 		char allArgs[MAXP * 3];
 		strcpy(allArgs, argv[2]);
-		for (int i = 3; i < argc; i++) {
+		for (int i = 3; i < argc; i++) { // Se ci sono spazi nei nomi
 			strcat(allArgs, " ");
 			strcat(allArgs, argv[i]);
-			printf("ALL ARGS: %s\n", allArgs);
 		}
 		char *token = NULL;
 		token = strtok(allArgs, ",");
@@ -88,43 +97,33 @@ int main(int argc, char *argv[]) {
 				printf("Luogo di nascita: %s\n", nomeComune);
 			} else printf("ERRORE: Luogo di nascita vuoto.\n");
 		}
-		if (!valid) {
+		if (valid) {
+			comune luogoNascita = ricerca(nomeComune);
+			if (luogoNascita != NULL) {
+				codfisc = cf(cogn, nome, gg, mm, aaaa, ch, luogoNascita);
+				printf("Codice Fiscale: %s\n", codfisc);
+#ifdef _WIN32
+				copyToClipboard(codfisc);
+#endif
+				retVal = EXIT_SUCCESS;
+			} else printf("ERRORE: Comune non trovato.\n"); 
+		} else {
 			printf("ERRORE: Dati incompleti o non validi.\n");
 			printf("Il programma puo' essere usato da linea di comando passando i parametri nel modo seguente: \n");
 			printf("cf comuni.txt Rossi,Mario,15/05/1972,M,Roma\n");
-			printf("Non sono ammessi altri formati.\n");
-			return EXIT_FAILURE;
+			printf("Non sono ammessi altri formati. Non usare lettere accentate: omettere gli accenti.\n");
 		}
-	}
-
-	printf("File luoghi di nascita: %s\n", argc > 1 ? argv[1] : "comuni.txt"); // Con piu' di un argomento ci aspettiamo il percorso del file luoghi di nascita ed i dati da linea di comando
-	printf("Lettura file luoghi di nascita....");
-	if (!carica(argc > 1 ? argv[1] : "comuni.txt")) {
-		printf(" FALLITO\nERRORE: File luoghi di nascita non trovato o danneggiato!\n");
-		return EXIT_FAILURE;
-	}
-	printf(" OK\n");
-	
-	// Processa i dati da argomenti
-	if (argc > 2) {
-		comune luogoNascita = ricerca(nomeComune);
-		if (luogoNascita != NULL) {
-			codfisc = cf(cogn, nome, gg, mm, aaaa, ch, luogoNascita);
-			printf("Codice Fiscale: %s\n", codfisc);
 #ifdef _WIN32
-			copyToClipboard(codfisc);
+		if (retVal == EXIT_FAILURE) clearClipboard(); // Se non ha funzionato rimuovi il (precedente) CF dagli appunti
 #endif
-			retVal = EXIT_SUCCESS;
-		} else printf("ERRORE: Comune non trovato.\n"); 
 	}
 
 	// Oppure continua con il normale inserimento dati manuale
-	char loop = argc <= 2;
-	while (loop) {
+	else do {
 		printf("\n\nCognome: ");
-		if (!fgets(cogn, MAXP+3, stdin)) break;
+		if (!fgets(cogn, MAXP + 3, stdin)) break;
 		printf("Nome: ");
-		if (!fgets(nome, MAXP+3, stdin)) break;
+		if (!fgets(nome, MAXP + 3, stdin)) break;
 		printf("Inserire la data di nascita:\n");
 		do {
 			printf("Giorno di nascita (gg): ");
@@ -159,18 +158,13 @@ int main(int argc, char *argv[]) {
 		copyToClipboard(codfisc);
 #endif
 		retVal = EXIT_SUCCESS;
-		printf("Vuoi calcolarne un altro?  (S/N): ");
-		if (!scanf("%c", &ch)) break;
-		if (ch == 'n' && ch != 'N') loop = 0;
-		else {
-			if (!scanf("%c", &ch)) break;
-			retVal = EXIT_FAILURE; // Tornera' positivo appena un nuovo CF sara' calcolato correttamente
-		}
-	}
-
-#ifdef _WIN32
-	if (retVal == EXIT_FAILURE) clearClipboard(); // Se non ha funzionato rimuovi il (precedente) CF dagli appunti
-#endif
+		do {
+			printf("Vuoi calcolarne un altro?  (S/N): ");
+			if (!scanf("%c", &ch) || ( ch != 's' && ch != 'S' && ch != 'n' && ch != 'N')) printf("ERRORE: Inserire solo il carattere 'S' o 'N'.\n");
+			getchar();
+			if (ch == 's' && ch == 'S') retVal = EXIT_FAILURE;
+		} while (ch != 's' && ch != 'S' && ch != 'n' && ch != 'N');
+	} while (ch != 'n' && ch != 'N');
 
 	pulisci();
 	return retVal;
